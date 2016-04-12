@@ -92,7 +92,7 @@ def compute_error(target_paths, predicted_paths):
     overall_fn = 0.0
 
     print "-"*46
-    print "{:<16} & {:<9} & {:<9} & {:<9}".format('PUNCTUATION','PRECISION','RECALL','F-SCORE')
+    print "{:<16} {:<9} {:<9} {:<9}".format('PUNCTUATION','PRECISION','RECALL','F-SCORE')
     for p in data.PUNCTUATION_VOCABULARY:
 
         if p == data.SPACE:
@@ -106,12 +106,12 @@ def compute_error(target_paths, predicted_paths):
         precision = (true_positives.get(p,0.) / (true_positives.get(p,0.) + false_positives[p])) if p in false_positives else nan
         recall = (true_positives.get(p,0.) / (true_positives.get(p,0.) + false_negatives[p])) if p in false_negatives else nan
         f_score = (2. * precision * recall / (precision + recall)) if (precision + recall) > 0 else nan        
-        print "{:<16} & {:<9} & {:<9} & {:<9}".format(punctuation, round(precision,3)*100, round(recall,3)*100, round(f_score,3)*100)
+        print "{:<16} {:<9} {:<9} {:<9}".format(punctuation, round(precision,3)*100, round(recall,3)*100, round(f_score,3)*100)
     print "-"*46
     pre = overall_tp/(overall_tp+overall_fp) if overall_fp else nan
     rec = overall_tp/(overall_tp+overall_fn) if overall_fn else nan
     f1 = (2.*pre*rec)/(pre+rec) if (pre + rec) else nan
-    print "{:<16} & {:<9} & {:<9} & {:<9}".format("Overall", round(pre,3)*100, round(rec,3)*100, round(f1,3)*100)
+    print "{:<16} {:<9} {:<9} {:<9}".format("Overall", round(pre,3)*100, round(rec,3)*100, round(f1,3)*100)
     print "Err: %s%%" % round((100.0 - float(total_correct) / float(counter-1) * 100.0), 2)
     print "SER: %s%%" % round((substitutions + deletions + insertions) / (correct + substitutions + deletions) * 100, 1)
 

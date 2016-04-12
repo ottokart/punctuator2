@@ -123,7 +123,7 @@ if __name__ == "__main__":
     gparams = T.grad(cost, net.params)
     updates = OrderedDict()
 
-    # Compude norm of gradients
+    # Compute norm of gradients
     norm = T.sqrt(T.sum(
                [T.sum(gparam ** 2) for gparam in gparams]
            ))

@@ -35,7 +35,7 @@ PUNCTUATION_VOCABULARY = {SPACE, ",COMMA", ".PERIOD", "?QUESTIONMARK"}
 PUNCTUATION_MAPPING = {"!EXCLAMATIONMARK": ".PERIOD", ":COLON": ".PERIOD", ";SEMICOLON": ".PERIOD"}
 
 EOS_TOKENS = {".PERIOD", "?QUESTIONMARK"}
-CRAP_TOKENS = {"<doc>", "<doc.>"} # punctuations that are not included in vocabulary, must be adde to CRAP_TOKENS
+CRAP_TOKENS = {"<doc>", "<doc.>"} # punctuations that are not included in vocabulary nor mapping, must be added to CRAP_TOKENS
 PAUSE_PREFIX = "<sil="
 
 def add_counts(word_counts, line):

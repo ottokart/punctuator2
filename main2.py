@@ -42,7 +42,11 @@ if __name__ == "__main__":
     else:
         sys.exit("'Learning rate' argument missing!")
 
-    stage1_model_file_name = "Model_%s_h%d_lr%s.pcl" % (model_name, num_hidden, learning_rate)
+    if len(sys.argv) > 4:
+        stage1_model_file_name = sys.argv[4]
+    else:
+        sys.exit("'Stage 1 model path' argument missing!")
+
     model_file_name = "Model_stage2_%s_h%d_lr%s.pcl" % (model_name, num_hidden, learning_rate)
 
     print num_hidden, learning_rate, model_file_name
@@ -89,7 +93,7 @@ if __name__ == "__main__":
     gparams = T.grad(cost, net.params)
     updates = OrderedDict()
 
-    # Compude norm of gradients
+    # Compute norm of gradients
     norm = T.sqrt(T.sum(
                [T.sum(gparam ** 2) for gparam in gparams]
            ))
