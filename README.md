@@ -55,7 +55,7 @@ e.g `python main.py <model_name> 256 0.02` works well.
 
 Second stage can be trained with:
 
-`python main.py <model_name> <hidden_layer_size> <learning_rate> <first_stage_model_path>`
+`python main2.py <model_name> <hidden_layer_size> <learning_rate> <first_stage_model_path>`
 
 
 
