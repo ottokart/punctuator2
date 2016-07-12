@@ -74,3 +74,15 @@ Error statistics in this example can be computed with:
 You can play with a trained model with:
 
 `python play_with_model.py <model_path>`
+
+
+# Citing
+
+The software is described in:
+
+    @inproceedings{tilk2016,
+      author    = {Ottokar Tilk and Tanel Alum{\"a}e},
+      title     = {Bidirectional Recurrent Neural Network with Attention Mechanism for Punctuation Restoration},
+      booktitle = {Interspeech 2016},
+      year      = {2016}
+    }
