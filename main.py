@@ -38,6 +38,12 @@ def get_minibatch(file_name, batch_size, shuffle, with_pauses=False):
     if with_pauses:
         P_batch = []
 
+    if len(dataset) < batch_size:
+        print "WARNING: Not enough samples in '%s'. Reduce mini-batch size to %d or use a dataset with at least %d words." % (
+            file_name,
+            len(dataset),
+            MINIBATCH_SIZE * data.MAX_SEQUENCE_LEN)
+
     for subsequence in dataset:
 
         X_batch.append(subsequence[0])

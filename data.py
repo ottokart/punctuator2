@@ -80,7 +80,7 @@ def write_processed_dataset(input_files, output_file):
     current_punctuations = []
     current_pauses = []
 
-    last_eos_idx = 0 # if it's still 0 when MAX_SEQUENCE_LEN is reaced, then the sentence is too long and skipped.
+    last_eos_idx = 0 # if it's still 0 when MAX_SEQUENCE_LEN is reached, then the sentence is too long and skipped.
     last_token_was_punctuation = True # skipt first token if it's punctuation
     last_pause = 0.0
 
