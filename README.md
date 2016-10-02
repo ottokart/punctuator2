@@ -1,13 +1,40 @@
 # Punctuator
 
-A bidirectional recurrent neural network model with attention mechanism for restoring missing punctuation in text.
+A bidirectional recurrent neural network model with attention mechanism for restoring missing punctuation in unsegmented text.
 
-A working demo can be seen here: http://bark.phon.ioc.ee/punctuator
-
-Model can be trained in two stages (second stage is optional):
+The model can be trained in two stages (second stage is optional):
 
 1. First stage is trained on punctuation annotated text. Here the model learns to restore puncutation based on textual features only.
 2. Optional second stage can be trained on punctuation *and* pause annotated text. In this stage the model learns to combine pause durations with textual features and adapts to the target domain. If pauses are omitted then only adaptation is performed. Second stage with pause durations can be used for example for restoring punctuation in automatic speech recognition system output.
+
+# How well does it work?
+
+A working demo can be seen here: http://bark.phon.ioc.ee/punctuator
+
+## English TED talks
+Training set size: 2.1M words. First stage only. More details can be found in [this paper](http://www.isca-speech.org/archive/Interspeech_2016/pdfs/1517.PDF).
+For comparison, our [previous model](https://github.com/ottokart/punctuator) got an overall F1-score of 50.8.
+
+PUNCTUATION      | PRECISION | RECALL    | F-SCORE
+--- | --- | --- | ---
+,COMMA           | 64.4 | 45.2 | 53.1
+?QUESTIONMARK    | 67.5 | 58.7 | 62.8
+.PERIOD          | 72.3 | 71.5 | 71.9
+_Overall_          | _68.9_ | _58.1_ | _63.1_
+
+## English Europarl v7
+Training set size: 42M words. First stage only.
+
+PUNCTUATION      | PRECISION | RECALL    | F-SCORE
+---|---|---|---
+?QUESTIONMARK    | 76.6      | 73.5      | 75.0
+!EXCLAMATIONMARK | 38.9      | 0.4       | 0.7
+,COMMA           | 67.9      | 67.9      | 67.9
+-DASH            | 48.7      | 8.7       | 14.8
+:COLON           | 50.4      | 28.6      | 36.5
+;SEMICOLON       | 40.5      | 3.9       | 7.0
+.PERIOD          | 83.3      | 84.6      | 83.9
+_Overall_          | _74.4_      | _71.6_      | _72.9_
 
 # Requirements
 * Python
