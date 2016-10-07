@@ -1,6 +1,6 @@
 # Punctuator
 
-A bidirectional recurrent neural network model with attention mechanism for restoring missing punctuation in unsegmented text.
+A bidirectional recurrent neural network model with attention mechanism for restoring missing inter-word punctuation in unsegmented text.
 
 The model can be trained in two stages (second stage is optional):
 
