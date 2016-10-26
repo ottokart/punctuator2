@@ -11,7 +11,7 @@ The model can be trained in two stages (second stage is optional):
 
 A working demo can be seen here: http://bark.phon.ioc.ee/punctuator
 
-Remember that all the scores given below are on _unsegmented_ text and we did not use prosodic features, so, among other things, the model has to detect sentence boundaries in addition to the boundary type (?QUESTIONMARK, .PERIOD or !EXCLAMATIONMARK) based entirely on textual features.
+Remember that all the scores given below are on _unsegmented_ text and we did not use prosodic features, so, among other things, the model has to detect sentence boundaries in addition to the boundary type (?QUESTIONMARK, .PERIOD or !EXCLAMATIONMARK) based entirely on textual features. The scores are computed on the test set.
 
 ## English TED talks
 Training set size: 2.1M words. First stage only. More details can be found in [this paper](http://www.isca-speech.org/archive/Interspeech_2016/pdfs/1517.PDF).
