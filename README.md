@@ -25,18 +25,18 @@ PUNCTUATION      | PRECISION | RECALL    | F-SCORE
 _Overall_          | _68.9_ | _58.1_ | _63.1_
 
 ## English Europarl v7
-Training set size: 42M words. First stage only. First 80% of lines as training set, next 10% as dev set and last 10% as test set.
+Training set size: 40M words. First stage only. First 80% of lines as training set, next 10% as dev set and last 10% as test set.
 
 PUNCTUATION      | PRECISION | RECALL    | F-SCORE
 --- | --- | --- | ---
-?QUESTIONMARK    | 78.4      | 75.5      | 76.9
-!EXCLAMATIONMARK | 21.1      | 0.3       | 0.5
-,COMMA           | 70.6      | 71.4      | 71.0
--DASH            | 54.6      | 9.5       | 16.2
-:COLON           | 52.6      | 30.3      | 38.4
-;SEMICOLON       | 46.2      | 3.9       | 7.2
-.PERIOD          | 84.7      | 85.9      | 85.3
-_Overall_          | _76.6_      | _74.4_      | _75.5_
+?QUESTIONMARK | 76.9 | 73.5 | 75.2
+!EXCLAMATIONMARK | 25.0 | 0.1 | 0.1
+,COMMA | 69.2 | 71.8 | 70.5
+-DASH | 56.6 | 7.3 | 13.0
+:COLON | 56.8 | 25.4 | 35.1
+;SEMICOLON | 56.3 | 1.2 | 2.3
+.PERIOD | 84.4 | 84.4 | 84.4
+_Overall_          | _75.8_      | _73.9_      | _74.8_
 
 # Requirements
 * Python
