@@ -19,6 +19,7 @@ MAX_EPOCHS = 50
 MINIBATCH_SIZE = 128
 L2_REG = 0.0
 CLIPPING_THRESHOLD = 2.0
+PATIENCE_EPOCHS = 1
 
 """
 Bi-directional RNN with attention
@@ -186,7 +187,7 @@ if __name__ == "__main__":
         if ppl <= best_ppl:
             best_ppl = ppl
             net.save(model_file_name, gsums=gsums, learning_rate=learning_rate, validation_ppl_history=validation_ppl_history, best_validation_ppl=best_ppl, epoch=epoch, random_state=rng.get_state())
-        elif best_ppl not in validation_ppl_history[-5:]:
+        elif best_ppl not in validation_ppl_history[-PATIENCE_EPOCHS:]:
             print "Finished!"
             print "Best validation perplexity was %s" % best_ppl
             break

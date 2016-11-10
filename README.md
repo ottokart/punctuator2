@@ -115,3 +115,5 @@ The software is described in:
       booktitle = {Interspeech 2016},
       year      = {2016}
     }
+
+We used PATIENCE_EPOCHS = 5 and MAX_SEQUENCE_LEN = 200 in the paper, but the new defaults (1 and 50 correspondingly) speed things up and work just as well. 
