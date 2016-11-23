@@ -10,6 +10,7 @@ The model can be trained in two stages (second stage is optional):
 # How well does it work?
 
 A working demo can be seen here: http://bark.phon.ioc.ee/punctuator
+You can try to compete with this model here: http://bark.phon.ioc.ee/punctuator/game
 
 Remember that all the scores given below are on _unsegmented_ text and we did not use prosodic features, so, among other things, the model has to detect sentence boundaries in addition to the boundary type (?QUESTIONMARK, .PERIOD or !EXCLAMATIONMARK) based entirely on textual features. The scores are computed on the test set.
 
@@ -22,21 +23,24 @@ PUNCTUATION      | PRECISION | RECALL    | F-SCORE
 ,COMMA           | 64.4 | 45.2 | 53.1
 ?QUESTIONMARK    | 67.5 | 58.7 | 62.8
 .PERIOD          | 72.3 | 71.5 | 71.9
-_Overall_          | _68.9_ | _58.1_ | _63.1_
+_Overall_        | _68.9_ | _58.1_ | _63.1_
 
 ## English Europarl v7
-Training set size: 40M words. First stage only. First 80% of lines as training set, next 10% as dev set and last 10% as test set.
+Training set size: 40M words. First stage only. Details in [./example](https://github.com/ottokart/punctuator2/tree/master/example).
+
+You can try to compete with this model [here](http://bark.phon.ioc.ee/punctuator/game).
 
 PUNCTUATION      | PRECISION | RECALL    | F-SCORE
---- | --- | --- | ---
-?QUESTIONMARK | 76.9 | 73.5 | 75.2
-!EXCLAMATIONMARK | 25.0 | 0.1 | 0.1
-,COMMA | 69.2 | 71.8 | 70.5
--DASH | 56.6 | 7.3 | 13.0
-:COLON | 56.8 | 25.4 | 35.1
-;SEMICOLON | 56.3 | 1.2 | 2.3
-.PERIOD | 84.4 | 84.4 | 84.4
-_Overall_          | _75.8_      | _73.9_      | _74.8_
+---              | ---       | ---       | ---
+?QUESTIONMARK    | 77.7      |  73.2     |  75.4
+!EXCLAMATIONMARK | 50.0      |  0.1      |  0.1
+,COMMA           | 68.9      |  72.0     |  70.4
+-DASH            | 55.9      |  8.8      |  15.2
+:COLON           | 60.9      |  23.8     |  34.2
+;SEMICOLON       | 44.7      |  1.1      |  2.2
+.PERIOD          | 84.7      |  84.1     |  84.4
+_Overall_        | _75.7_    | _73.9_    | _74.8_
+
 
 # Requirements
 * Python
