@@ -1,3 +1,5 @@
+**[DEMO](http://bark.phon.ioc.ee/punctuator)** and **[DEMO2](http://bark.phon.ioc.ee/punctuator/game)**
+
 # Punctuator
 
 A bidirectional recurrent neural network model with attention mechanism for restoring missing inter-word punctuation in unsegmented text.
@@ -9,8 +11,8 @@ The model can be trained in two stages (second stage is optional):
 
 # How well does it work?
 
-A working demo can be seen here: http://bark.phon.ioc.ee/punctuator
-You can try to compete with this model here: http://bark.phon.ioc.ee/punctuator/game
+* A working demo can be seen here: http://bark.phon.ioc.ee/punctuator
+* You can try to compete with this model here: http://bark.phon.ioc.ee/punctuator/game
 
 Remember that all the scores given below are on _unsegmented_ text and we did not use prosodic features, so, among other things, the model has to detect sentence boundaries in addition to the boundary type (?QUESTIONMARK, .PERIOD or !EXCLAMATIONMARK) based entirely on textual features. The scores are computed on the test set.
 
