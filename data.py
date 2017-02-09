@@ -187,13 +187,13 @@ def write_processed_dataset(input_files, output_file):
     with open(output_file, 'wb') as f:
         cPickle.dump(data, f, cPickle.HIGHEST_PROTOCOL)
 
-def create_dev_test_train_split_and_vocabulary(root_path, build_vocabulary, train_output, dev_output, test_output, pretrained_embeddings_path=None):
+def create_dev_test_train_split_and_vocabulary(root_path, create_vocabulary, train_output, dev_output, test_output, pretrained_embeddings_path=None):
 
     train_txt_files = []
     dev_txt_files = []
     test_txt_files = []
 
-    if build_vocabulary and not pretrained_embeddings_path:
+    if create_vocabulary and not pretrained_embeddings_path:
         word_counts = dict()
     
     for root, dirnames, filenames in os.walk(root_path):
@@ -210,12 +210,12 @@ def create_dev_test_train_split_and_vocabulary(root_path, build_vocabulary, trai
             else:
                 train_txt_files.append(path)
 
-                if build_vocabulary and not pretrained_embeddings_path:
+                if create_vocabulary and not pretrained_embeddings_path:
                     with codecs.open(path, 'r', 'utf-8') as text:
                         for line in text:
                             add_counts(word_counts, line)
 
-    if build_vocabulary:
+    if create_vocabulary:
         if pretrained_embeddings_path:
             vocabulary = []
             embeddings = []
