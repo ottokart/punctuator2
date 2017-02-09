@@ -11,6 +11,12 @@ import fnmatch
 
 DATA_PATH = "../data"
 
+# path to text file in the format:
+# word1 0.123 0.123 ... 0.123
+# word2 0.123 0.123 ... 0.123 etc...
+# e.g. glove.6B.50d.txt
+PRETRAINED_EMBEDDINGS_PATH = None
+
 END = "</S>"
 UNK = "<UNK>"
 
@@ -238,21 +244,12 @@ if __name__ == "__main__":
     else:
         sys.exit("The path to stage1 source data directory with txt files is missing")
 
-    if len(sys.argv) > 2:
-        # path to text file in the format:
-        # word1 0.123 0.123 ... 0.123
-        # word2 0.123 0.123 ... 0.123 etc...
-        # e.g. glove.6B.50d.txt
-        pretrained_embeddings_path = sys.argv[2] 
-    else:
-        pretrained_embeddings_path = None
-
     if not os.path.exists(DATA_PATH):
         os.makedirs(DATA_PATH)
     else:
         sys.exit("Data already exists")
 
-    create_dev_test_train_split_and_vocabulary(path, True, TRAIN_FILE, DEV_FILE, TEST_FILE, pretrained_embeddings_path)
+    create_dev_test_train_split_and_vocabulary(path, True, TRAIN_FILE, DEV_FILE, TEST_FILE, PRETRAINED_EMBEDDINGS_PATH)
 
     # Stage 2
     if len(sys.argv) > 2:
