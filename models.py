@@ -3,6 +3,7 @@ from __future__ import division
 
 import theano
 import cPickle
+import os
 import theano.tensor as T
 import numpy as np
 
