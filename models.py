@@ -2,6 +2,7 @@
 from __future__ import division
 
 import theano
+import cPickle
 import theano.tensor as T
 import numpy as np
 
@@ -124,9 +125,23 @@ class GRU(object):
         self.y_vocabulary = y_vocabulary
 
         # input model
-        self.We = weights_Glorot(x_vocabulary_size, n_hidden, 'We', rng) # Share embeddings between forward and backward model
-        self.GRU_f = GRULayer(rng=rng, n_in=n_hidden, n_out=n_hidden, minibatch_size=minibatch_size)
-        self.GRU_b = GRULayer(rng=rng, n_in=n_hidden, n_out=n_hidden, minibatch_size=minibatch_size)
+        pretrained_embs_path = "We.pcl"
+        if os.path.exists(pretrained_embs_path):
+            print "Found pretrained embeddings in '%s'. Using them..." % pretrained_embs_path
+            with open(pretrained_embs_path, 'rb') as f:
+                We = cPickle.load(f)
+            n_emb = len(We[0])
+            We.append([0.1]*n_emb) # END
+            We.append([0.0]*n_emb) # UNK - both quite arbitrary initializations
+
+            We = np.array(We).astype(theano.config.floatX)
+            self.We = theano.shared(value=We, name="We", borrow=True)
+        else:
+            n_emb = n_hidden
+            self.We = weights_Glorot(x_vocabulary_size, n_emb, 'We', rng) # Share embeddings between forward and backward model
+
+        self.GRU_f = GRULayer(rng=rng, n_in=n_emb, n_out=n_hidden, minibatch_size=minibatch_size)
+        self.GRU_b = GRULayer(rng=rng, n_in=n_emb, n_out=n_hidden, minibatch_size=minibatch_size)
 
         # output model
         self.GRU = GRULayer(rng=rng, n_in=n_hidden*2, n_out=n_hidden, minibatch_size=minibatch_size)

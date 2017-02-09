@@ -48,11 +48,14 @@ def add_counts(word_counts, line):
             continue
         word_counts[w] = word_counts.get(w, 0) + 1
 
-def write_vocabulary(word_counts, file_name):
-    vocabulary = [wc[0] for wc in reversed(sorted(word_counts.items(), key=operator.itemgetter(1))) if wc[1] >= MIN_WORD_COUNT_IN_VOCAB and wc[0] != UNK][:MAX_WORD_VOCABULARY_SIZE] # Unk will be appended to end
+def build_vocabulary(word_counts):
+    return [wc[0] for wc in reversed(sorted(word_counts.items(), key=operator.itemgetter(1))) if wc[1] >= MIN_WORD_COUNT_IN_VOCAB and wc[0] != UNK][:MAX_WORD_VOCABULARY_SIZE] # Unk will be appended to end
 
-    vocabulary.append(END)
-    vocabulary.append(UNK)
+def write_vocabulary(vocabulary, file_name):
+    if END not in vocabulary:
+        vocabulary.append(END)
+    if UNK not in vocabulary:
+        vocabulary.append(UNK)
 
     print "Vocabulary size: %d" % len(vocabulary)
 
@@ -178,13 +181,13 @@ def write_processed_dataset(input_files, output_file):
     with open(output_file, 'wb') as f:
         cPickle.dump(data, f, cPickle.HIGHEST_PROTOCOL)
 
-def create_dev_test_train_split_and_vocabulary(root_path, build_vocabulary, train_output, dev_output, test_output):
+def create_dev_test_train_split_and_vocabulary(root_path, build_vocabulary, train_output, dev_output, test_output, pretrained_embeddings_path=None):
 
     train_txt_files = []
     dev_txt_files = []
     test_txt_files = []
 
-    if build_vocabulary:
+    if build_vocabulary and not pretrained_embeddings_path:
         word_counts = dict()
     
     for root, dirnames, filenames in os.walk(root_path):
@@ -201,13 +204,28 @@ def create_dev_test_train_split_and_vocabulary(root_path, build_vocabulary, trai
             else:
                 train_txt_files.append(path)
 
-                if build_vocabulary:
+                if build_vocabulary and not pretrained_embeddings_path:
                     with codecs.open(path, 'r', 'utf-8') as text:
                         for line in text:
                             add_counts(word_counts, line)
 
     if build_vocabulary:
-        write_vocabulary(word_counts, WORD_VOCAB_FILE)
+        if pretrained_embeddings_path:
+            vocabulary = []
+            embeddings = []
+            with codecs.open(pretrained_embeddings_path, 'r', 'utf-8') as f:
+                for line in f:
+                    line = line.split()
+                    w = line[0]
+                    e = [float(x) for x in line[1:]]
+                    vocabulary.append(w)
+                    embeddings.append(e)
+
+            with open("We.pcl", 'wb') as f:
+                cPickle.dump(embeddings, f, cPickle.HIGHEST_PROTOCOL)
+        else:
+            vocabulary = build_vocabulary(word_counts)
+        write_vocabulary(vocabulary, WORD_VOCAB_FILE)
 
     write_processed_dataset(train_txt_files, train_output)
     write_processed_dataset(dev_txt_files, dev_output)
@@ -220,12 +238,21 @@ if __name__ == "__main__":
     else:
         sys.exit("The path to stage1 source data directory with txt files is missing")
 
+    if len(sys.argv) > 2:
+        # path to text file in the format:
+        # word1 0.123 0.123 ... 0.123
+        # word2 0.123 0.123 ... 0.123 etc...
+        # e.g. glove.6B.50d.txt
+        pretrained_embeddings_path = sys.argv[2] 
+    else:
+        pretrained_embeddings_path = None
+
     if not os.path.exists(DATA_PATH):
         os.makedirs(DATA_PATH)
     else:
         sys.exit("Data already exists")
 
-    create_dev_test_train_split_and_vocabulary(path, True, TRAIN_FILE, DEV_FILE, TEST_FILE)
+    create_dev_test_train_split_and_vocabulary(path, True, TRAIN_FILE, DEV_FILE, TEST_FILE, pretrained_embeddings_path)
 
     # Stage 2
     if len(sys.argv) > 2:
