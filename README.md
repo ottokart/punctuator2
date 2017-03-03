@@ -122,4 +122,4 @@ The software is described in:
       year      = {2016}
     }
 
-We used PATIENCE_EPOCHS = 5 and MAX_SEQUENCE_LEN = 200 in the paper, but the new defaults (1 and 50 correspondingly) speed things up and work just as well. 
+We used the [release v1.0](https://github.com/ottokart/punctuator2/releases/tag/v1.0)
