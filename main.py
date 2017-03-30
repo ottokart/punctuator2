@@ -28,8 +28,7 @@ For a sequence of N words, the model makes N punctuation decisions (no punctuati
 
 def get_minibatch(file_name, batch_size, shuffle, with_pauses=False):
 
-    with open(file_name, 'rb') as f:
-        dataset = cPickle.load(f)
+    dataset = data.load(file_name)
 
     if shuffle:
         np.random.shuffle(dataset)

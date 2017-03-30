@@ -48,6 +48,19 @@ EOS_TOKENS = {".PERIOD", "?QUESTIONMARK", "!EXCLAMATIONMARK"}
 CRAP_TOKENS = {"<doc>", "<doc.>"} # punctuations that are not included in vocabulary nor mapping, must be added to CRAP_TOKENS
 PAUSE_PREFIX = "<sil="
 
+# replacement for pickling that takes less RAM. Useful for large datasets.
+def dump(d, path):
+    with open(path, 'w') as f:
+        for s in d:
+            f.write("%s\n" % repr(s))
+
+def load(path):
+    d = []
+    with open(path, 'r') as f:
+        for l in f:
+            d.append(eval(l))
+    return d
+
 def add_counts(word_counts, line):
     for w in line.split():
         if w in CRAP_TOKENS or w in PUNCTUATION_VOCABULARY or w in PUNCTUATION_MAPPING or w.startswith(PAUSE_PREFIX):
@@ -184,8 +197,7 @@ def write_processed_dataset(input_files, output_file):
 
     print "%.2f%% UNK-s in %s" % (num_unks / num_total * 100, output_file)
 
-    with open(output_file, 'wb') as f:
-        cPickle.dump(data, f, cPickle.HIGHEST_PROTOCOL)
+    dump(data, output_file)
 
 def create_dev_test_train_split_and_vocabulary(root_path, create_vocabulary, train_output, dev_output, test_output, pretrained_embeddings_path=None):
 
