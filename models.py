@@ -170,9 +170,9 @@ class GRU(object):
         self.params += self.GRU.params + self.GRU_f.params + self.GRU_b.params
 
         # bi-directional recurrence
-        def input_recurrence(x_f_t, x_b_t, h_f_tm1, h_b_tm1, We):
-            h_f_t = self.GRU_f.step(x_t=We[x_f_t.flatten()], h_tm1=h_f_tm1)
-            h_b_t = self.GRU_b.step(x_t=We[x_b_t.flatten()], h_tm1=h_b_tm1)
+        def input_recurrence(x_f_t, x_b_t, h_f_tm1, h_b_tm1):
+            h_f_t = self.GRU_f.step(x_t=x_f_t, h_tm1=h_f_tm1)
+            h_b_t = self.GRU_b.step(x_t=x_b_t, h_tm1=h_b_tm1)
             return [h_f_t, h_b_t]
 
         def output_recurrence(x_t, h_tm1, Wa_h, Wa_y, Wf_h, Wf_c, Wf_f, bf, Wy, by, context, projected_context):
@@ -196,9 +196,10 @@ class GRU(object):
 
             return [h_t, hf_t, y_t, alphas]
 
+        x_emb = self.We[x.flatten()].reshape((x.shape[0], minibatch_size, n_emb))
+
         [h_f_t, h_b_t], _ = theano.scan(fn=input_recurrence,
-            sequences=[x, x[::-1]], # forward and backward sequences
-            non_sequences=[self.We],
+            sequences=[x_emb, x_emb[::-1]], # forward and backward sequences
             outputs_info=[self.GRU_f.h0, self.GRU_b.h0])
 
         # 0-axis is time steps, 1-axis is batch size and 2-axis is hidden layer size
