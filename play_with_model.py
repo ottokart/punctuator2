@@ -22,7 +22,7 @@ def convert_punctuation_to_readable(punct_token):
     else:
         return punct_token[0]
 
-def punctuate(predict, word_vocabulary, punctuation_vocabulary, reverse_punctuation_vocabulary, text, f_out):
+def punctuate(predict, word_vocabulary, punctuation_vocabulary, reverse_punctuation_vocabulary, reverse_word_vocabulary, text, f_out, show_unk):
 
     if len(text) == 0:
         sys.exit("Input text from stdin missing.")
@@ -39,6 +39,8 @@ def punctuate(predict, word_vocabulary, punctuation_vocabulary, reverse_punctuat
             break
 
         converted_subsequence = [word_vocabulary.get(w, word_vocabulary[data.UNK]) for w in subsequence]
+        if show_unk:
+            subsequence = [reverse_word_vocabulary[w] for w in converted_subsequence]
 
         y = predict(to_array(converted_subsequence))
 
@@ -81,6 +83,10 @@ if __name__ == "__main__":
     else:
         sys.exit("Model file path argument missing")
 
+    show_unk = False
+    if len(sys.argv) > 2:
+        show_unk = bool(int(sys.argv[2]))
+
     x = T.imatrix('x')
 
     print "Loading model parameters..."
@@ -90,9 +96,10 @@ if __name__ == "__main__":
     predict = theano.function(inputs=[x], outputs=net.y)
     word_vocabulary = net.x_vocabulary
     punctuation_vocabulary = net.y_vocabulary
+    reverse_word_vocabulary = {v:k for k,v in net.x_vocabulary.items()}
     reverse_punctuation_vocabulary = {v:k for k,v in net.y_vocabulary.items()}
 
     with codecs.getwriter('utf-8')(sys.stdout) as f_out:
         while True:
             text = raw_input("\nTEXT: ").decode('utf-8')
-            punctuate(predict, word_vocabulary, punctuation_vocabulary, reverse_punctuation_vocabulary, text, f_out)
+            punctuate(predict, word_vocabulary, punctuation_vocabulary, reverse_punctuation_vocabulary, reverse_word_vocabulary, text, f_out, show_unk)

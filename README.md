@@ -110,6 +110,12 @@ You can play with a trained model with:
 
 `python play_with_model.py <model_path>`
 
+or with:
+
+`python play_with_model.py <model_path> 1`
+
+if you want to see, which words the model sees as UNKs (OOVs).
+
 
 # Citing
 
@@ -122,4 +128,4 @@ The software is described in:
       year      = {2016}
     }
 
-We used the [release v1.0](https://github.com/ottokart/punctuator2/releases/tag/v1.0)
+We used the [release v1.0](https://github.com/ottokart/punctuator2/releases/tag/v1.0) in the paper.
