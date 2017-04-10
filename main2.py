@@ -60,13 +60,24 @@ if __name__ == "__main__":
     p = T.matrix('p')
     lr = T.scalar('lr')
 
+    continue_with_previous = False
     if os.path.isfile(model_file_name):
-        print "Loading previous model state"
 
+        while True:
+            resp = raw_input("Found an existing model with the name %s. Do you want to:\n[c]ontinue training the existing model?\n[r]eplace the existing model and train a new one?\n[e]xit?\n>" % model_file_name)
+            resp = resp.lower().strip()
+            if resp not in ('c', 'r', 'e'):
+                continue
+            if resp == 'e':
+                sys.exit()
+            elif resp == 'c':
+                continue_with_previous = True
+            break
+
+    if continue_with_previous:
         net, state = models.load(model_file_name, MINIBATCH_SIZE, x, p)
         gsums, learning_rate, validation_ppl_history, starting_epoch, rng = state
         best_ppl = min(validation_ppl_history)
-
     else:
         rng = np.random
         rng.seed(1)

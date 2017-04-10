@@ -97,7 +97,21 @@ if __name__ == "__main__":
     y = T.imatrix('y')
     lr = T.scalar('lr')
 
+    continue_with_previous = False
     if os.path.isfile(model_file_name):
+
+        while True:
+            resp = raw_input("Found an existing model with the name %s. Do you want to:\n[c]ontinue training the existing model?\n[r]eplace the existing model and train a new one?\n[e]xit?\n>" % model_file_name)
+            resp = resp.lower().strip()
+            if resp not in ('c', 'r', 'e'):
+                continue
+            if resp == 'e':
+                sys.exit()
+            elif resp == 'c':
+                continue_with_previous = True
+            break
+
+    if continue_with_previous:
         print "Loading previous model state" 
 
         net, state = models.load(model_file_name, MINIBATCH_SIZE, x)

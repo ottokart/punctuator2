@@ -8,6 +8,7 @@ import operator
 import cPickle
 import codecs
 import fnmatch
+import shutil
 
 DATA_PATH = "../data"
 
@@ -256,11 +257,25 @@ if __name__ == "__main__":
     else:
         sys.exit("The path to stage1 source data directory with txt files is missing")
 
-    if not os.path.exists(DATA_PATH):
-        os.makedirs(DATA_PATH)
-    else:
-        sys.exit("Data already exists")
+    replace = False
+    if os.path.exists(DATA_PATH):
 
+        while True:
+            resp = raw_input("Data path '%s' already exists. Do you want to:\n[r]eplace the files in existing data path?\n[e]xit?\n>" % DATA_PATH)
+            resp = resp.lower().strip()
+            if resp not in ('r', 'e'):
+                continue
+            if resp == 'e':
+                sys.exit()
+            elif resp == 'r':
+                replace = True
+            break
+
+    if replace and os.path.exists(DATA_PATH):
+        shutil.rmtree(DATA_PATH)
+
+    os.makedirs(DATA_PATH)
+    
     create_dev_test_train_split_and_vocabulary(path, True, TRAIN_FILE, DEV_FILE, TEST_FILE, PRETRAINED_EMBEDDINGS_PATH)
 
     # Stage 2
