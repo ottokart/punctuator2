@@ -18,6 +18,8 @@ Remember that all the scores given below are on _unsegmented_ text and we did no
 
 Training speed with default settings, an optimal Theano installation and a modern GPU should be around 10000 words per second.
 
+Pretrained models can be downloaded [here](https://drive.google.com/drive/folders/0B7BsN5f2F1fZQnFsbzJ3TWxxMms?usp=sharing) (Demo + 2 models from the Interspeech paper).
+
 ## English TED talks
 Training set size: 2.1M words. First stage only. More details can be found in [this paper](http://www.isca-speech.org/archive/Interspeech_2016/pdfs/1517.PDF).
 For comparison, our [previous model](https://github.com/ottokart/punctuator) got an overall F1-score of 50.8.
@@ -45,9 +47,8 @@ PUNCTUATION      | PRECISION | RECALL    | F-SCORE
 .PERIOD          | 84.7      |  84.1     |  84.4
 _Overall_        | _75.7_    | _73.9_    | _74.8_
 
-
 # Requirements
-* Python
+* Python 2.7
 * Numpy
 * Theano
 
@@ -99,6 +100,10 @@ Second stage can be trained with:
 Preprocessed text can be punctuated with e.g:
 
 `cat data.dev.txt | python punctuator.py <model_path> <model_output_path>`
+
+or, if pause annotations are present in data.dev.txt and you have a second stage model trained on pause annotated data, then:
+
+`cat data.dev.txt | python punctuator.py <model_path> <model_output_path> 1`
 
 Punctuation tokens in data.dev.txt don't have to be removed - the punctuator.py script ignores them.
 
