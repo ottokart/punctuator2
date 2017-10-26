@@ -113,7 +113,7 @@ Error statistics in this example can be computed with:
 `python error_calculator.py data.dev.txt <model_output_path>`
 
 
-You can play with a trained model with:
+You can play with a trained model with (assumes the input text is similarly preprocessed as the training data):
 
 `python play_with_model.py <model_path>`
 
