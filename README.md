@@ -65,7 +65,7 @@ _Overall_        | _75.7_    | _73.9_    | _74.8_
 
   Second phase data can also be without pause annotations to do just target domain adaptation.
   
-Make sure that first words of sentences don't have capitalized first letters. This would give the model unfair hints about period locations.
+Make sure that first words of sentences don't have capitalized first letters. This would give the model unfair hints about period locations. Also, the text files you use for training and validation must be large enough (at least minibatch_size x sequence_length of words, which is 128x50=6400 words with default settings), otherwise you might get an error.
 
 # Configuration
 Vocabulary size, punctuation tokens and their mappings, and converted data location can be configured in the header of data.py.
