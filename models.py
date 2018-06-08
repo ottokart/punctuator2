@@ -51,7 +51,7 @@ def weights_Glorot(i, o, name, rng, is_logistic_sigmoid=False, keepdims=False):
     return theano.shared(value=W_values, name=name, borrow=True)
 
 def load(file_path, minibatch_size, x, p=None):
-    import models
+    from . import models
     try:
         import cPickle
     except ImportError:
