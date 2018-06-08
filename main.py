@@ -1,5 +1,5 @@
 # coding: utf-8
-from __future__ import division
+from __future__ import division, print_function
 
 from collections import OrderedDict
 from time import time
@@ -8,9 +8,16 @@ import models
 import data
 
 import theano
-import cPickle
+try:
+    import cPickle
+except ImportError:
+    import _pickle as cPickle
 import sys
 import os.path
+try:
+    input = raw_input
+except NameError:
+    pass
 
 import theano.tensor as T
 import numpy as np
@@ -39,10 +46,10 @@ def get_minibatch(file_name, batch_size, shuffle, with_pauses=False):
         P_batch = []
 
     if len(dataset) < batch_size:
-        print "WARNING: Not enough samples in '%s'. Reduce mini-batch size to %d or use a dataset with at least %d words." % (
+        print("WARNING: Not enough samples in '%s'. Reduce mini-batch size to %d or use a dataset with at least %d words." % (
             file_name,
             len(dataset),
-            MINIBATCH_SIZE * data.MAX_SEQUENCE_LEN)
+            MINIBATCH_SIZE * data.MAX_SEQUENCE_LEN))
 
     for subsequence in dataset:
 
@@ -88,7 +95,7 @@ if __name__ == "__main__":
 
     model_file_name = "Model_%s_h%d_lr%s.pcl" % (model_name, num_hidden, learning_rate)
 
-    print num_hidden, learning_rate, model_file_name
+    print(num_hidden, learning_rate, model_file_name)
 
     word_vocabulary = data.read_vocabulary(data.WORD_VOCAB_FILE)
     punctuation_vocabulary = data.iterable_to_dict(data.PUNCTUATION_VOCABULARY)
@@ -101,7 +108,7 @@ if __name__ == "__main__":
     if os.path.isfile(model_file_name):
 
         while True:
-            resp = raw_input("Found an existing model with the name %s. Do you want to:\n[c]ontinue training the existing model?\n[r]eplace the existing model and train a new one?\n[e]xit?\n>" % model_file_name)
+            resp = input("Found an existing model with the name %s. Do you want to:\n[c]ontinue training the existing model?\n[r]eplace the existing model and train a new one?\n[e]xit?\n>" % model_file_name)
             resp = resp.lower().strip()
             if resp not in ('c', 'r', 'e'):
                 continue
@@ -112,7 +119,7 @@ if __name__ == "__main__":
             break
 
     if continue_with_previous:
-        print "Loading previous model state" 
+        print("Loading previous model state")
 
         net, state = models.load(model_file_name, MINIBATCH_SIZE, x)
         gsums, learning_rate, validation_ppl_history, starting_epoch, rng = state
@@ -122,7 +129,7 @@ if __name__ == "__main__":
         rng = np.random
         rng.seed(1)
 
-        print "Building model..."
+        print("Building model...")
         net = models.GRU(
             rng=rng,
             x=x,
@@ -170,7 +177,7 @@ if __name__ == "__main__":
         outputs=net.cost(y)
     )
 
-    print "Training..."
+    print("Training...")
     for epoch in range(starting_epoch, MAX_EPOCHS):
         t0 = time()
         total_neg_log_likelihood = 0
@@ -183,24 +190,24 @@ if __name__ == "__main__":
             if iteration % 100 == 0:
                 sys.stdout.write("PPL: %.4f; Speed: %.2f sps\n" % (np.exp(total_neg_log_likelihood / total_num_output_samples), total_num_output_samples / max(time() - t0, 1e-100)))
                 sys.stdout.flush()
-        print "Total number of training labels: %d" % total_num_output_samples
+        print("Total number of training labels: %d" % total_num_output_samples)
 
         total_neg_log_likelihood = 0
         total_num_output_samples = 0
         for X, Y in get_minibatch(data.DEV_FILE, MINIBATCH_SIZE, shuffle=False):
             total_neg_log_likelihood += validate_model(X, Y)
             total_num_output_samples += np.prod(Y.shape)
-        print "Total number of validation labels: %d" % total_num_output_samples
+        print("Total number of validation labels: %d" % total_num_output_samples)
         
         ppl = np.exp(total_neg_log_likelihood / total_num_output_samples)
         validation_ppl_history.append(ppl)
 
-        print "Validation perplexity is %s" % np.round(ppl, 4)
+        print("Validation perplexity is %s" % np.round(ppl, 4))
 
         if ppl <= best_ppl:
             best_ppl = ppl
             net.save(model_file_name, gsums=gsums, learning_rate=learning_rate, validation_ppl_history=validation_ppl_history, best_validation_ppl=best_ppl, epoch=epoch, random_state=rng.get_state())
         elif best_ppl not in validation_ppl_history[-PATIENCE_EPOCHS:]:
-            print "Finished!"
-            print "Best validation perplexity was %s" % best_ppl
+            print("Finished!")
+            print("Best validation perplexity was %s" % best_ppl)
             break

@@ -1,11 +1,11 @@
 # coding: utf-8
 
-from __future__ import division
+from __future__ import division, print_function
 from nltk.tokenize import word_tokenize
 
 import nltk
 import os
-import codecs
+from io import open
 import re
 import sys
 
@@ -59,8 +59,8 @@ def process_line(line):
 
 skipped = 0
 
-with codecs.open(sys.argv[2], 'w', 'utf-8') as out_txt:
-    with codecs.open(sys.argv[1], 'r', 'utf-8') as text:
+with open(sys.argv[2], 'w', encoding='utf-8') as out_txt:
+    with open(sys.argv[1], 'r', encoding='utf-8') as text:
 
         for line in text:
 
@@ -75,4 +75,4 @@ with codecs.open(sys.argv[2], 'w', 'utf-8') as out_txt:
 
             out_txt.write(line + '\n')
 
-print "Skipped %d lines" % skipped
+print("Skipped %d lines" % skipped)

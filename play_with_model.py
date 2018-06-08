@@ -1,13 +1,13 @@
 # coding: utf-8
 
-from __future__ import division
+from __future__ import division, print_function
 
 import models
 import data
 
 import theano
 import sys
-import codecs
+from io import open
 
 import theano.tensor as T
 import numpy as np
@@ -89,17 +89,22 @@ if __name__ == "__main__":
 
     x = T.imatrix('x')
 
-    print "Loading model parameters..."
+    print("Loading model parameters...")
     net, _ = models.load(model_file, 1, x)
 
-    print "Building model..."
+    print("Building model...")
     predict = theano.function(inputs=[x], outputs=net.y)
     word_vocabulary = net.x_vocabulary
     punctuation_vocabulary = net.y_vocabulary
     reverse_word_vocabulary = {v:k for k,v in net.x_vocabulary.items()}
     reverse_punctuation_vocabulary = {v:k for k,v in net.y_vocabulary.items()}
 
-    with codecs.getwriter('utf-8')(sys.stdout) as f_out:
+    with open(sys.stdout.fileno(), 'w', encoding='utf-8', closefd=False) as f_out:
         while True:
-            text = raw_input("\nTEXT: ").decode('utf-8')
+            try:
+                text = raw_input("\nTEXT: ").decode('utf-8')
+            except NameError:
+                text = input("\nTEXT: ")
+
             punctuate(predict, word_vocabulary, punctuation_vocabulary, reverse_punctuation_vocabulary, reverse_word_vocabulary, text, f_out, show_unk)
+            f_out.flush()

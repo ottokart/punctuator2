@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from __future__ import division
+from __future__ import division, print_function
 
 from nltk.tokenize import word_tokenize
 
@@ -9,8 +9,8 @@ import data
 
 import theano
 import sys
-import codecs
 import re
+from io import open
 
 import theano.tensor as T
 import numpy as np
@@ -106,10 +106,10 @@ if __name__ == "__main__":
 
     x = T.imatrix('x')
 
-    print "Loading model parameters..."
+    print("Loading model parameters...")
     net, _ = models.load(model_file, 1, x)
 
-    print "Building model..."
+    print("Building model...")
     predict = theano.function(inputs=[x], outputs=net.y)
     word_vocabulary = net.x_vocabulary
     punctuation_vocabulary = net.y_vocabulary
@@ -120,11 +120,15 @@ if __name__ == "__main__":
     tokenizer = word_tokenize
     untokenizer = lambda text: text.replace(" '", "'").replace(" n't", "n't").replace("can not", "cannot")
 
-    with codecs.getwriter('utf-8')(sys.stdout) as f_out:
+    with open(sys.stdout.fileno(), 'w', encoding='utf-8', closefd=False) as f_out:
         while True:
-            text = raw_input("\nTEXT: ").decode('utf-8')
+            try:
+                text = raw_input("\nTEXT: ").decode('utf-8')
+            except NameError:
+                text = input("\nTEXT: ")
 
             words = [w for w in untokenizer(' '.join(tokenizer(text))).split()
                      if w not in punctuation_vocabulary and w not in human_readable_punctuation_vocabulary]
 
             punctuate(predict, word_vocabulary, punctuation_vocabulary, reverse_punctuation_vocabulary, reverse_word_vocabulary, words, f_out, show_unk)
+            f_out.flush()

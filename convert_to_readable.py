@@ -1,5 +1,5 @@
 import sys
-import codecs
+from io import open
 from data import EOS_TOKENS, PUNCTUATION_VOCABULARY
 
 if __name__ == "__main__":
@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     with_newlines = len(sys.argv) > 3 and bool(int(sys.argv[3]))
 
-    with codecs.open(input_file, 'r', 'utf-8') as in_f, codecs.open(output_file, 'w', 'utf-8') as out_f:
+    with open(input_file, 'r', encoding='utf-8') as in_f, open(output_file, 'w', encoding='utf-8') as out_f:
         last_was_eos = True
         first = True
         for token in in_f.read().split():
