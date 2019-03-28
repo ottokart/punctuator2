@@ -1,12 +1,12 @@
 # coding: utf-8
-from __future__ import division
+from __future__ import division, print_function
 
 import models
 import data
 
 import theano
 import sys
-import codecs
+from io import open
 
 import theano.tensor as T
 import numpy as np
@@ -25,7 +25,7 @@ def convert_punctuation_to_readable(punct_token):
 
 def restore_with_pauses(output_file, text, pauses, word_vocabulary, reverse_punctuation_vocabulary, predict_function):
     i = 0
-    with codecs.open(output_file, 'w', 'utf-8') as f_out:
+    with open(output_file, 'w', encoding='utf-8') as f_out:
         while True:
 
             subsequence = text[i:i+MAX_SUBSEQUENCE_LEN]
@@ -71,7 +71,7 @@ def restore_with_pauses(output_file, text, pauses, word_vocabulary, reverse_punc
 
 def restore(output_file, text, word_vocabulary, reverse_punctuation_vocabulary, predict_function):
     i = 0
-    with codecs.open(output_file, 'w', 'utf-8') as f_out:
+    with open(output_file, 'w', encoding='utf-8') as f_out:
         while True:
 
             subsequence = text[i:i+MAX_SUBSEQUENCE_LEN]
@@ -134,10 +134,10 @@ if __name__ == "__main__":
     
         p = T.matrix('p')
 
-        print "Loading model parameters..."
+        print("Loading model parameters...")
         net, _ = models.load(model_file, 1, x, p)
 
-        print "Building model..."
+        print("Building model...")
         predict = theano.function(
             inputs=[x, p],
             outputs=net.y
@@ -145,10 +145,10 @@ if __name__ == "__main__":
 
     else:
 
-        print "Loading model parameters..."
+        print("Loading model parameters...")
         net, _ = models.load(model_file, 1, x)
 
-        print "Building model..."
+        print("Building model...")
         predict = theano.function(
             inputs=[x],
             outputs=net.y
@@ -160,7 +160,7 @@ if __name__ == "__main__":
     reverse_word_vocabulary = {v:k for k,v in word_vocabulary.items()}
     reverse_punctuation_vocabulary = {v:k for k,v in punctuation_vocabulary.items()}
 
-    input_text = codecs.getreader('utf-8')(sys.stdin).read()
+    input_text = open(sys.stdin.fileno(), 'r', encoding='utf-8').read()
 
     if len(input_text) == 0:
         sys.exit("Input text from stdin missing.")
