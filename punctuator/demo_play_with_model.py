@@ -15,24 +15,28 @@ from io import open
 import theano.tensor as T
 import numpy as np
 
+# pylint: disable=redefined-outer-name
+
 numbers = re.compile(r'\d')
 is_number = lambda x: len(numbers.sub('', x)) / len(x) < 0.6
+
 
 def to_array(arr, dtype=np.int32):
     # minibatch of 1 sequence as column
     return np.array([arr], dtype=dtype).T
 
+
 def convert_punctuation_to_readable(punct_token):
     if punct_token == data.SPACE:
         return ' '
-    elif punct_token.startswith('-'):
+    if punct_token.startswith('-'):
         return ' ' + punct_token[0] + ' '
-    else:
-        return punct_token[0] + ' '
+    return punct_token[0] + ' '
+
 
 def punctuate(predict, word_vocabulary, punctuation_vocabulary, reverse_punctuation_vocabulary, reverse_word_vocabulary, words, f_out, show_unk):
 
-    if len(words) == 0:
+    if not words:
         sys.exit("Input text from stdin missing.")
 
     if words[-1] != data.END:
@@ -42,15 +46,12 @@ def punctuate(predict, word_vocabulary, punctuation_vocabulary, reverse_punctuat
 
     while True:
 
-        subsequence = words[i:i+data.MAX_SEQUENCE_LEN]
+        subsequence = words[i:i + data.MAX_SEQUENCE_LEN]
 
-        if len(subsequence) == 0:
+        if not subsequence:
             break
 
-        converted_subsequence = [word_vocabulary.get(
-                "<NUM>" if is_number(w) else w.lower(),
-                word_vocabulary[data.UNK])
-            for w in subsequence]
+        converted_subsequence = [word_vocabulary.get("<NUM>" if is_number(w) else w.lower(), word_vocabulary[data.UNK]) for w in subsequence]
 
         if show_unk:
             subsequence = [reverse_word_vocabulary[w] for w in converted_subsequence]
@@ -83,9 +84,9 @@ def punctuate(predict, word_vocabulary, punctuation_vocabulary, reverse_punctuat
             f_out.write(convert_punctuation_to_readable(current_punctuation))
             if j < step - 1:
                 if current_punctuation in data.EOS_TOKENS:
-                    f_out.write(subsequence[1+j].title())
+                    f_out.write(subsequence[1 + j].title())
                 else:
-                    f_out.write(subsequence[1+j])
+                    f_out.write(subsequence[1 + j])
 
         if subsequence[-1] == data.END:
             break
@@ -113,8 +114,8 @@ if __name__ == "__main__":
     predict = theano.function(inputs=[x], outputs=net.y)
     word_vocabulary = net.x_vocabulary
     punctuation_vocabulary = net.y_vocabulary
-    reverse_word_vocabulary = {v:k for k,v in net.x_vocabulary.items()}
-    reverse_punctuation_vocabulary = {v:k for k,v in net.y_vocabulary.items()}
+    reverse_word_vocabulary = {v: k for k, v in net.x_vocabulary.items()}
+    reverse_punctuation_vocabulary = {v: k for k, v in net.y_vocabulary.items()}
 
     human_readable_punctuation_vocabulary = [p[0] for p in punctuation_vocabulary if p != data.SPACE]
     tokenizer = word_tokenize
@@ -127,8 +128,9 @@ if __name__ == "__main__":
             except NameError:
                 text = input("\nTEXT: ")
 
-            words = [w for w in untokenizer(' '.join(tokenizer(text))).split()
-                     if w not in punctuation_vocabulary and w not in human_readable_punctuation_vocabulary]
+            words = [
+                w for w in untokenizer(' '.join(tokenizer(text))).split() if w not in punctuation_vocabulary and w not in human_readable_punctuation_vocabulary
+            ]
 
             punctuate(predict, word_vocabulary, punctuation_vocabulary, reverse_punctuation_vocabulary, reverse_word_vocabulary, words, f_out, show_unk)
             f_out.flush()

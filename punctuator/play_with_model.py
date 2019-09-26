@@ -12,19 +12,23 @@ from io import open
 import theano.tensor as T
 import numpy as np
 
+# pylint: disable=redefined-outer-name
+
+
 def to_array(arr, dtype=np.int32):
     # minibatch of 1 sequence as column
     return np.array([arr], dtype=dtype).T
 
+
 def convert_punctuation_to_readable(punct_token):
     if punct_token == data.SPACE:
         return " "
-    else:
-        return punct_token[0]
+    return punct_token[0]
+
 
 def punctuate(predict, word_vocabulary, punctuation_vocabulary, reverse_punctuation_vocabulary, reverse_word_vocabulary, text, f_out, show_unk):
 
-    if len(text) == 0:
+    if not text:
         sys.exit("Input text from stdin missing.")
 
     text = [w for w in text.split() if w not in punctuation_vocabulary] + [data.END]
@@ -33,9 +37,9 @@ def punctuate(predict, word_vocabulary, punctuation_vocabulary, reverse_punctuat
 
     while True:
 
-        subsequence = text[i:i+data.MAX_SEQUENCE_LEN]
+        subsequence = text[i:i + data.MAX_SEQUENCE_LEN]
 
-        if len(subsequence) == 0:
+        if not subsequence:
             break
 
         converted_subsequence = [word_vocabulary.get(w, word_vocabulary[data.UNK]) for w in subsequence]
@@ -68,7 +72,7 @@ def punctuate(predict, word_vocabulary, punctuation_vocabulary, reverse_punctuat
         for j in range(step):
             f_out.write(" " + punctuations[j] + " " if punctuations[j] != data.SPACE else " ")
             if j < step - 1:
-                f_out.write(subsequence[1+j])
+                f_out.write(subsequence[1 + j])
 
         if subsequence[-1] == data.END:
             break
@@ -96,8 +100,8 @@ if __name__ == "__main__":
     predict = theano.function(inputs=[x], outputs=net.y)
     word_vocabulary = net.x_vocabulary
     punctuation_vocabulary = net.y_vocabulary
-    reverse_word_vocabulary = {v:k for k,v in net.x_vocabulary.items()}
-    reverse_punctuation_vocabulary = {v:k for k,v in net.y_vocabulary.items()}
+    reverse_word_vocabulary = {v: k for k, v in net.x_vocabulary.items()}
+    reverse_punctuation_vocabulary = {v: k for k, v in net.y_vocabulary.items()}
 
     with open(sys.stdout.fileno(), 'w', encoding='utf-8', closefd=False) as f_out:
         while True:

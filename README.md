@@ -1,6 +1,12 @@
-**[DEMO](http://bark.phon.ioc.ee/punctuator)** and **[DEMO2](http://bark.phon.ioc.ee/punctuator/game)**
-
 # Punctuator
+
+[![](https://img.shields.io/pypi/v/punctuator.svg)](https://pypi.python.org/pypi/punctuator)
+[![Build Status](https://img.shields.io/travis/chrisspen/punctuator.svg?branch=master)](https://travis-ci.org/chrisspen/punctuator)
+[![](https://pyup.io/repos/github/chrisspen/punctuator/shield.svg)](https://pyup.io/repos/github/chrisspen/punctuator)
+
+This is a fork of [Ottokar Tilk's punctuator2](https://github.com/ottokart/punctuator2) cleaned up into a formal Python3 package with testing.
+
+**[DEMO](http://bark.phon.ioc.ee/punctuator)** and **[DEMO2](http://bark.phon.ioc.ee/punctuator/game)**
 
 A bidirectional recurrent neural network model with attention mechanism for restoring missing inter-word punctuation in unsegmented text.
 
@@ -8,6 +14,39 @@ The model can be trained in two stages (second stage is optional):
 
 1. First stage is trained on punctuation annotated text. Here the model learns to restore puncutation based on textual features only.
 2. Optional second stage can be trained on punctuation *and* pause annotated text. In this stage the model learns to combine pause durations with textual features and adapts to the target domain. If pauses are omitted then only adaptation is performed. Second stage with pause durations can be used for example for restoring punctuation in automatic speech recognition system output.
+
+# Installation
+
+To install:
+
+    virtualenv -p python3.7 .env
+    . .env/bin/activate
+    pip install punctuator
+
+Additionally, you'll need a trained model. You can create your own following the instructions below, or you can use a pre-trained model from [here](https://drive.google.com/drive/folders/0B7BsN5f2F1fZQnFsbzJ3TWxxMms?usp=sharing).
+
+Place these models in `PUNCTUATOR_DATA_DIR` directory, which defaults to `~/.punctuator`.
+
+For example, to download `Demo-Europarl-EN.pcl`, activate your virtual environment and run:
+
+    . .env/bin/activate
+    mkdir -p ~/.punctuator
+    cd ~/.punctuator
+    gdown https://drive.google.com/uc?id=0B7BsN5f2F1fZd1Q0aXlrUDhDbnM
+
+To download other model files, find the Google Drive id via the share link, and substitute that in the command above.
+
+# Usage
+
+To use from the command line:
+
+    cat input.txt | python punctuator.py model.pcl output.txt
+
+To use from Python:
+
+    from punctuator import Punctuator
+    p = Punctuator('model.pcl')
+    print(p.punctuate('some text'))
 
 # How well does it work?
 
@@ -64,7 +103,7 @@ _Overall_        | _75.7_    | _73.9_    | _74.8_
   ```to <sil=0.000> be <sil=0.100> ,COMMA or <sil=0.000> not <sil=0.000> to <sil=0.000> be <sil=0.150> ,COMMA that <sil=0.000> is <sil=0.000> the <sil=0.000> question <sil=1.000> .PERIOD```
 
   Second phase data can also be without pause annotations to do just target domain adaptation.
-  
+
 Make sure that first words of sentences don't have capitalized first letters. This would give the model unfair hints about period locations. Also, the text files you use for training and validation must be large enough (at least minibatch_size x sequence_length of words, which is 128x50=6400 words with default settings), otherwise you might get an error.
 
 # Configuration
@@ -123,23 +162,12 @@ or with:
 
 if you want to see, which words the model sees as UNKs (OOVs).
 
+# Development
 
-# Citing
+Run all tests with:
 
-The software is described in:
+    export TESTNAME=; tox
 
-    @inproceedings{tilk2016,
-      author    = {Ottokar Tilk and Tanel Alum{\"a}e},
-      title     = {Bidirectional Recurrent Neural Network with Attention Mechanism for Punctuation Restoration},
-      booktitle = {Interspeech 2016},
-      year      = {2016}
-    }
+Run a specific test in a specific environment with:
 
-We used the [release v1.0](https://github.com/ottokart/punctuator2/releases/tag/v1.0) in the paper.
-
-# Alternatives
-
-* A fork from this repository that uses additional prosodic features: https://github.com/alpoktem/punkProse
-* Convolutional neural network with slightly smaller accuracy but much higher speed (50x faster): https://github.com/vackosar/keras-punctuator (additional details here: https://github.com/ottokart/punctuator2/issues/14)
-* A general sequence labeling model: https://github.com/marekrei/sequence-labeler that can be used for punctuation restoration with small modifications (example here: https://github.com/ottokart/sequence-labeler). Punctuator2 can be probably used for other sequence labeling problems as well.
-* Our previous approach with unidirectional LSTM (less accurate, but useful if you don't want to use Theano): https://github.com/ottokart/punctuator
+    export TESTNAME=.test_punctuate; tox -e py37

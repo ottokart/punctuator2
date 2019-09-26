@@ -1,0 +1,4 @@
+nltk>=3.4.5
+numpy>=1.17.2
+theano>=1.0.4
+gdown>=3.8.3

@@ -1,0 +1,8 @@
+tox>=2.0.0
+# Update pylint/astroid after recursion bug is fixed?
+# https://github.com/PyCQA/pylint/issues/2388
+astroid<=2.2.5
+pylint<=2.3.1
+yapf>=0.28.0
+pre-commit>=1.14.4
+coverage>=4.5.4

@@ -1,46 +1,49 @@
 # coding: utf-8
 from __future__ import division, print_function
+import os
+import logging
+import _pickle as cPickle
 
 import theano
-try:
-    import cPickle
-    cpickle_options = {}
-except ImportError:
-    import _pickle as cPickle
-    cpickle_options = { 'encoding': 'latin-1' }
-import os
 import theano.tensor as T
 import numpy as np
+
+cpickle_options = {'encoding': 'latin-1'}
+
 
 def PReLU(a, x):
     return T.maximum(0.0, x) + a * T.minimum(0.0, x)
 
+
 def ReLU(x):
     return T.maximum(0.0, x)
 
+
 def _get_shape(i, o, keepdims):
     if (i == 1 or o == 1) and not keepdims:
-        return (max(i,o),)
-    else:
-        return (i, o)
+        return (max(i, o),)
+    return (i, o)
+
 
 def _slice(tensor, size, i):
     """Gets slice of columns of the tensor"""
     if tensor.ndim == 2:
-        return tensor[:, i*size:(i+1)*size]
-    elif tensor.ndim == 1:
-        return tensor[i*size:(i+1)*size]
-    else:
-        raise NotImplementedError("Tensor should be 1 or 2 dimensional")
+        return tensor[:, i * size:(i + 1) * size]
+    if tensor.ndim == 1:
+        return tensor[i * size:(i + 1) * size]
+    raise NotImplementedError("Tensor should be 1 or 2 dimensional")
+
 
 def weights_const(i, o, name, const, keepdims=False):
     W_values = np.ones(_get_shape(i, o, keepdims)).astype(theano.config.floatX) * const
     return theano.shared(value=W_values, name=name, borrow=True)
 
+
 def weights_identity(i, o, name, const, keepdims=False):
     #"A Simple Way to Initialize Recurrent Networks of Rectified Linear Units" (2015) (http://arxiv.org/abs/1504.00941)
     W_values = np.eye(*_get_shape(i, o, keepdims)).astype(theano.config.floatX) * const
     return theano.shared(value=W_values, name=name, borrow=True)
+
 
 def weights_Glorot(i, o, name, rng, is_logistic_sigmoid=False, keepdims=False):
     #http://jmlr.org/proceedings/papers/v9/glorot10a/glorot10a.pdf
@@ -50,19 +53,22 @@ def weights_Glorot(i, o, name, rng, is_logistic_sigmoid=False, keepdims=False):
     W_values = rng.uniform(low=-d, high=d, size=_get_shape(i, o, keepdims)).astype(theano.config.floatX)
     return theano.shared(value=W_values, name=name, borrow=True)
 
+
 def load(file_path, minibatch_size, x, p=None):
-    from . import models
-    try:
-        import cPickle
-    except ImportError:
-        import _pickle as cPickle
-    import theano
-    import numpy as np
+    #import models
+    # try:
+    # import cPickle
+    # except ImportError:
+    # import _pickle as cPickle
+    # import theano
+    # import numpy as np
 
     with open(file_path, 'rb') as f:
         state = cPickle.load(f, **cpickle_options)
 
-    Model = getattr(models, state["type"])
+    logging.info('Looking up %s.', state["type"])
+    # Model = getattr(models, state["type"])
+    Model = globals()[state["type"]]
 
     rng = np.random
     rng.set_state(state["random_state"])
@@ -76,7 +82,7 @@ def load(file_path, minibatch_size, x, p=None):
         y_vocabulary=state["y_vocabulary"],
         stage1_model_file_name=state.get("stage1_model_file_name", None),
         p=p
-        )
+    )
 
     for net_param, state_param in zip(net.params, state["params"]):
         net_param.set_value(state_param, borrow=True)
@@ -85,7 +91,8 @@ def load(file_path, minibatch_size, x, p=None):
 
     return net, (gsums, state["learning_rate"], state["validation_ppl_history"], state["epoch"], rng)
 
-class GRULayer(object):
+
+class GRULayer:
 
     def __init__(self, rng, n_in, n_out, minibatch_size):
         super(GRULayer, self).__init__()
@@ -98,9 +105,9 @@ class GRULayer(object):
         self.h0 = theano.shared(value=np.zeros((minibatch_size, n_out)).astype(theano.config.floatX), name='h0', borrow=True)
 
         # Gate parameters:
-        self.W_x = weights_Glorot(n_in, n_out*2, 'W_x', rng)
-        self.W_h = weights_Glorot(n_out, n_out*2, 'W_h', rng)
-        self.b = weights_const(1, n_out*2, 'b', 0)
+        self.W_x = weights_Glorot(n_in, n_out * 2, 'W_x', rng)
+        self.W_h = weights_Glorot(n_out, n_out * 2, 'W_h', rng)
+        self.b = weights_const(1, n_out * 2, 'b', 0)
         # Input parameters
         self.W_x_h = weights_Glorot(n_in, n_out, 'W_x_h', rng)
         self.W_h_h = weights_Glorot(n_out, n_out, 'W_h_h', rng)
@@ -120,7 +127,8 @@ class GRULayer(object):
 
         return h_t
 
-class GRU(object):
+
+class GRU:
 
     def __init__(self, rng, x, minibatch_size, n_hidden, x_vocabulary, y_vocabulary, stage1_model_file_name=None, p=None):
 
@@ -136,12 +144,12 @@ class GRU(object):
         # input model
         pretrained_embs_path = "We.pcl"
         if os.path.exists(pretrained_embs_path):
-            print("Found pretrained embeddings in '%s'. Using them..." % pretrained_embs_path)
+            logging.info("Found pretrained embeddings in '%s'. Using them...", pretrained_embs_path)
             with open(pretrained_embs_path, 'rb') as f:
                 We = cPickle.load(f, **cpickle_options)
             n_emb = len(We[0])
-            We.append([0.1]*n_emb) # END
-            We.append([0.0]*n_emb) # UNK - both quite arbitrary initializations
+            We.append([0.1] * n_emb) # END
+            We.append([0.0] * n_emb) # UNK - both quite arbitrary initializations
 
             We = np.array(We).astype(theano.config.floatX)
             self.We = theano.shared(value=We, name="We", borrow=True)
@@ -153,7 +161,7 @@ class GRU(object):
         self.GRU_b = GRULayer(rng=rng, n_in=n_emb, n_out=n_hidden, minibatch_size=minibatch_size)
 
         # output model
-        self.GRU = GRULayer(rng=rng, n_in=n_hidden*2, n_out=n_hidden, minibatch_size=minibatch_size)
+        self.GRU = GRULayer(rng=rng, n_in=n_hidden * 2, n_out=n_hidden, minibatch_size=minibatch_size)
         self.Wy = weights_const(n_hidden, y_vocabulary_size, 'Wy', 0)
         self.by = weights_const(1, y_vocabulary_size, 'by', 0)
 
@@ -170,10 +178,7 @@ class GRU(object):
         self.Wf_f = weights_const(n_hidden, n_hidden, 'Wf_f', 0)
         self.bf = weights_const(1, n_hidden, 'by', 0)
 
-        self.params = [self.We,
-                       self.Wy, self.by,
-                       self.Wa_h, self.Wa_c, self.ba, self.Wa_y,
-                       self.Wf_h, self.Wf_c, self.Wf_f, self.bf]
+        self.params = [self.We, self.Wy, self.by, self.Wa_h, self.Wa_c, self.ba, self.Wa_y, self.Wf_h, self.Wf_c, self.Wf_f, self.bf]
 
         self.params += self.GRU.params + self.GRU_f.params + self.GRU_b.params
 
@@ -190,7 +195,7 @@ class GRU(object):
             alphas = T.exp(T.dot(h_a, Wa_y))
             alphas = alphas.reshape((alphas.shape[0], alphas.shape[1])) # drop 2-axis (sized 1)
             alphas = alphas / alphas.sum(axis=0, keepdims=True)
-            weighted_context = (context * alphas[:,:,None]).sum(axis=0)
+            weighted_context = (context * alphas[:, :, None]).sum(axis=0)
 
             h_t = self.GRU.step(x_t=x_t, h_tm1=h_tm1)
 
@@ -206,46 +211,46 @@ class GRU(object):
 
         x_emb = self.We[x.flatten()].reshape((x.shape[0], minibatch_size, n_emb))
 
-        [h_f_t, h_b_t], _ = theano.scan(fn=input_recurrence,
+        [h_f_t, h_b_t], _ = theano.scan(
+            fn=input_recurrence,
             sequences=[x_emb, x_emb[::-1]], # forward and backward sequences
-            outputs_info=[self.GRU_f.h0, self.GRU_b.h0])
+            outputs_info=[self.GRU_f.h0, self.GRU_b.h0]
+        )
 
         # 0-axis is time steps, 1-axis is batch size and 2-axis is hidden layer size
         context = T.concatenate([h_f_t, h_b_t[::-1]], axis=2)
         projected_context = T.dot(context, self.Wa_c) + self.ba
 
-        [_, self.last_hidden_states, self.y, self.alphas], _ = theano.scan(fn=output_recurrence,
+        [_, self.last_hidden_states, self.y, self.alphas], _ = theano.scan(
+            fn=output_recurrence,
             sequences=[context[1:]], # ignore the 1st word in context, because there's no punctuation before that
             non_sequences=[self.Wa_h, self.Wa_y, self.Wf_h, self.Wf_c, self.Wf_f, self.bf, self.Wy, self.by, context, projected_context],
-            outputs_info=[self.GRU.h0, None, None, None])
+            outputs_info=[self.GRU.h0, None, None, None]
+        )
 
-        print("Number of parameters is %d" % sum(np.prod(p.shape.eval()) for p in self.params))
+        logging.info("Number of parameters is %d", sum(np.prod(p.shape.eval()) for p in self.params))
 
         self.L1 = sum(abs(p).sum() for p in self.params)
         self.L2_sqr = sum((p**2).sum() for p in self.params)
 
     def cost(self, y):
-        num_outputs = self.y.shape[0]*self.y.shape[1] # time steps * number of parallel sequences in batch
+        num_outputs = self.y.shape[0] * self.y.shape[1] # time steps * number of parallel sequences in batch
         output = self.y.reshape((num_outputs, self.y.shape[2]))
         return -T.sum(T.log(output[T.arange(num_outputs), y.flatten()]))
 
     def save(self, file_path, gsums=None, learning_rate=None, validation_ppl_history=None, best_validation_ppl=None, epoch=None, random_state=None):
-        try:
-            import cPickle
-        except ImportError:
-            import _pickle as cPickle
         state = {
-            "type":                     self.__class__.__name__,
-            "n_hidden":                 self.n_hidden,
-            "x_vocabulary":             self.x_vocabulary,
-            "y_vocabulary":             self.y_vocabulary,
-            "stage1_model_file_name":   self.stage1_model_file_name if hasattr(self, "stage1_model_file_name") else None,
-            "params":                   [p.get_value(borrow=True) for p in self.params],
-            "gsums":                    [s.get_value(borrow=True) for s in gsums] if gsums else None,
-            "learning_rate":            learning_rate,
-            "validation_ppl_history":   validation_ppl_history,
-            "epoch":                    epoch,
-            "random_state":             random_state
+            "type": self.__class__.__name__,
+            "n_hidden": self.n_hidden,
+            "x_vocabulary": self.x_vocabulary,
+            "y_vocabulary": self.y_vocabulary,
+            "stage1_model_file_name": self.stage1_model_file_name if hasattr(self, "stage1_model_file_name") else None,
+            "params": [p.get_value(borrow=True) for p in self.params],
+            "gsums": [s.get_value(borrow=True) for s in gsums] if gsums else None,
+            "learning_rate": learning_rate,
+            "validation_ppl_history": validation_ppl_history,
+            "epoch": epoch,
+            "random_state": random_state
         }
 
         with open(file_path, 'wb') as f:
@@ -255,6 +260,7 @@ class GRU(object):
 class GRUstage2(GRU):
 
     def __init__(self, rng, x, minibatch_size, n_hidden, x_vocabulary, y_vocabulary, stage1_model_file_name, p=None):
+        # pylint: disable=super-init-not-called
 
         y_vocabulary_size = len(y_vocabulary)
 
@@ -282,13 +288,11 @@ class GRUstage2(GRU):
 
             return [h_t, y_t]
 
-        [_, self.y], _ = theano.scan(fn=recurrence,
-            sequences=[self.stage1.last_hidden_states, p],
-            non_sequences=[self.Wy, self.by],
-            outputs_info=[self.GRU.h0, None])
+        [_, self.y
+         ], _ = theano.scan(fn=recurrence, sequences=[self.stage1.last_hidden_states, p], non_sequences=[self.Wy, self.by], outputs_info=[self.GRU.h0, None])
 
-        print("Number of parameters is %d" % sum(np.prod(p.shape.eval()) for p in self.params))
-        print("Number of parameters with stage1 params is %d" % sum(np.prod(p.shape.eval()) for p in self.params + self.stage1.params))
+        logging.info("Number of parameters is %d", sum(np.prod(p.shape.eval()) for p in self.params))
+        logging.info("Number of parameters with stage1 params is %d", sum(np.prod(p.shape.eval()) for p in self.params + self.stage1.params))
 
         self.L1 = sum(abs(p).sum() for p in self.params)
         self.L2_sqr = sum((p**2).sum() for p in self.params)
