@@ -2,7 +2,6 @@
 
 [![](https://img.shields.io/pypi/v/punctuator.svg)](https://pypi.python.org/pypi/punctuator)
 [![Build Status](https://img.shields.io/travis/chrisspen/punctuator.svg?branch=master)](https://travis-ci.org/chrisspen/punctuator)
-[![](https://pyup.io/repos/github/chrisspen/punctuator/shield.svg)](https://pyup.io/repos/github/chrisspen/punctuator)
 
 This is a fork of [Ottokar Tilk's punctuator2](https://github.com/ottokart/punctuator2) cleaned up into a formal Python3 package with testing.
 
