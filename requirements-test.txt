@@ -6,3 +6,4 @@ pylint<=2.3.1
 yapf>=0.28.0
 pre-commit>=1.14.4
 coverage>=4.5.4
+twine>=2.0.0
