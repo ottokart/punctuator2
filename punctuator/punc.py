@@ -4,6 +4,7 @@ from __future__ import division, print_function
 
 import os
 import sys
+import re
 import logging
 import pickle
 from io import open, StringIO
@@ -14,9 +15,9 @@ import numpy as np
 
 import gdown
 
-import models
-import data
-from convert_to_readable import convert
+from . import models
+from . import data
+from .convert_to_readable import convert
 
 PUNCTUATOR_DATA_DIR = os.path.expanduser(os.environ.get('PUNCTUATOR_DATA_DIR', '~/.punctuator'))
 
@@ -163,7 +164,18 @@ def restore(output_file, text, word_vocabulary, reverse_punctuation_vocabulary, 
 
 class Punctuator:
 
+    def model_exists(self, fn):
+        if os.path.isfile(fn):
+            return fn
+        _fn = os.path.join(PUNCTUATOR_DATA_DIR, fn)
+        if os.path.isfile(_fn):
+            return _fn
+
     def __init__(self, model_file, use_pauses=False):
+
+        model_file = self.model_exists(model_file)
+        assert model_file, 'Model %s does not exist.' % model_file
+
         self.model_file = model_file
         self.use_pauses = use_pauses
 
@@ -225,15 +237,18 @@ class Punctuator:
             fout2 = StringIO()
             convert(fout.getvalue(), fout2)
 
-        # if isinstance(output_file, str):
-        # with open(output_file, 'w', encoding='utf-8') as fout_final:
-        # fout_final.write(fout2.getvalue())
-        # else:
-        # output_file.write(fout2.getvalue())
-
         output_text = fout2.getvalue()
+
         if output_text and not output_text.endswith('.'):
             output_text += '.'
+
+        # Correct "'s" capitalization.
+        output_text = re.sub(r"'[a-zA-Z]+\b", lambda m: m.group(0).lower(), output_text)
+
+        # Correct I capitalizations.
+        output_text = re.sub(r"\bi'm\b", "I'm", output_text)
+        output_text = re.sub(r"\bi've\b", "I've", output_text)
+        output_text = re.sub(r"\bi\b", "I", output_text)
 
         return output_text
 

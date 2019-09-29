@@ -55,13 +55,6 @@ def weights_Glorot(i, o, name, rng, is_logistic_sigmoid=False, keepdims=False):
 
 
 def load(file_path, minibatch_size, x, p=None):
-    #import models
-    # try:
-    # import cPickle
-    # except ImportError:
-    # import _pickle as cPickle
-    # import theano
-    # import numpy as np
 
     with open(file_path, 'rb') as f:
         state = cPickle.load(f, **cpickle_options)

@@ -1,6 +1,7 @@
 import sys
 from io import open
-from data import EOS_TOKENS, PUNCTUATION_VOCABULARY
+
+from .data import EOS_TOKENS, PUNCTUATION_VOCABULARY
 
 
 def convert(input_text, out_f, with_newlines=False):
