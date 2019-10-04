@@ -36,7 +36,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     license="MIT",
-    url="https://github.com/chrisspen/punctuator",
+    url="https://github.com/chrisspen/punctuator2",
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         # 'Development Status :: 6 - Mature',
