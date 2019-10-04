@@ -13,5 +13,6 @@ REL_DIR=./
 python3.7 -m venv $REL_DIR.env
 . $REL_DIR.env/bin/activate
 pip install -U pip
+pip install -U setuptools
 
 pip install --cache-dir $CACHE_DIR -r requirements.txt requirements-test.txt
