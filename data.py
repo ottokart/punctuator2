@@ -27,6 +27,7 @@ PRETRAINED_EMBEDDINGS_PATH = None
 
 END = "</S>"
 UNK = "<UNK>"
+NUM = "<NUM>"
 
 SPACE = "_SPACE"
 
