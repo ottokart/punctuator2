@@ -249,7 +249,7 @@ class GRU(object):
         }
 
         with open(file_path, 'wb') as f:
-            cPickle.dump(state, f, protocol=cPickle.HIGHEST_PROTOCOL)
+            cPickle.dump(state, f)
 
 
 class GRUstage2(GRU):
