@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # coding: utf-8
 
 from __future__ import division, print_function
@@ -22,8 +23,10 @@ multiple_punct = re.compile(r'([\.\?\!\,\:\;\-])(?:[\.\?\!\,\:\;\-]){1,}')
 
 is_number = lambda x: len(numbers.sub("", x)) / len(x) < 0.6
 
+
 def untokenize(line):
     return line.replace(" '", "'").replace(" n't", "n't").replace("can not", "cannot")
+
 
 def skip(line):
 
@@ -38,6 +41,7 @@ def skip(line):
         return True
 
     return False
+
 
 def process_line(line):
 
@@ -57,8 +61,10 @@ def process_line(line):
 
     return untokenize(" ".join(output_tokens) + " ")
 
+
 skipped = 0
 
+print('Reading %s and outputting to %s.' % (sys.argv[1], sys.argv[2]))
 with open(sys.argv[2], 'w', encoding='utf-8') as out_txt:
     with open(sys.argv[1], 'r', encoding='utf-8') as text:
 
