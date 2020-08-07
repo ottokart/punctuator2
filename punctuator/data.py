@@ -252,7 +252,7 @@ def create_dev_test_train_split_and_vocabulary(root_path, create_vocabulary, tra
                     embeddings.append(e)
 
             with open("We.pcl", 'wb') as f:
-                cPickle.dump(embeddings, f, cPickle.HIGHEST_PROTOCOL)
+                cPickle.dump(embeddings, f)
         else:
             vocabulary = build_vocabulary(word_counts)
         write_vocabulary(vocabulary, WORD_VOCAB_FILE)
