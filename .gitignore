@@ -64,3 +64,4 @@ target/
 *.out
 *.geany
 /data
+/raw

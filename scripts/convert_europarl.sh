@@ -2,8 +2,8 @@
 set -e
 
 HOME_DIR="$(dirname "$(readlink -f "$0")")"
-DEST=../data/raw/training-monolingual-europarl.tgz
-WORKING_DIR=../data/raw/training-monolingual-europarl
+DEST=../raw/training-monolingual-europarl.tgz
+WORKING_DIR=../raw/training-monolingual-europarl
 POSTPROCESSED_DIR=../data/postprocessed
 
 if [ -f "$DEST" ]; then
