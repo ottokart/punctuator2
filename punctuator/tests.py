@@ -50,12 +50,18 @@ class Tests(unittest.TestCase):
             if not os.path.isfile(model_file):
                 model_file = download_model()
             print('Model file:', model_file)
-
+            # Check if file can be read in as bytes
+            infile = open(model_file, 'rb')
+            data = infile.read()
+            t0 = time.time()
+            p = Punctuator(data)
+            td = time.time() - t0
+            print('Loaded in %s seconds as bytes.' % td)
             # Create punctuator.
             t0 = time.time()
             p = Punctuator(model_file=model_file)
             td = time.time() - t0
-            print('Loaded in %s seconds.' % td)
+            print('Loaded in %s seconds from path.' % td)
 
             # Add punctuation.
             for input_text, expect_output_text in samples:

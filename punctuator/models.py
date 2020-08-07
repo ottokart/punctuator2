@@ -85,6 +85,36 @@ def load(file_path, minibatch_size, x, p=None):
     return net, (gsums, state["learning_rate"], state["validation_ppl_history"], state["epoch"], rng)
 
 
+def loads(file_bytes, minibatch_size, x, p=None):
+
+    state = cPickle.loads(file_bytes, **cpickle_options)
+
+    logging.info('Looking up %s.', state["type"])
+    # Model = getattr(models, state["type"])
+    Model = globals()[state["type"]]
+
+    rng = np.random
+    rng.set_state(state["random_state"])
+
+    net = Model(
+        rng=rng,
+        x=x,
+        minibatch_size=minibatch_size,
+        n_hidden=state["n_hidden"],
+        x_vocabulary=state["x_vocabulary"],
+        y_vocabulary=state["y_vocabulary"],
+        stage1_model_file_name=state.get("stage1_model_file_name", None),
+        p=p
+    )
+
+    for net_param, state_param in zip(net.params, state["params"]):
+        net_param.set_value(state_param, borrow=True)
+
+    gsums = [theano.shared(gsum) for gsum in state["gsums"]] if state["gsums"] else None
+
+    return net, (gsums, state["learning_rate"], state["validation_ppl_history"], state["epoch"], rng)
+
+
 class GRULayer:
 
     def __init__(self, rng, n_in, n_out, minibatch_size):
