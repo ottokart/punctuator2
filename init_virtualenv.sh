@@ -14,5 +14,6 @@ python3.7 -m venv $REL_DIR.env
 . $REL_DIR.env/bin/activate
 pip install -U pip
 pip install -U setuptools
+pip install pypandoc
 
-pip install --cache-dir $CACHE_DIR -r requirements.txt requirements-test.txt
+pip install --cache-dir $CACHE_DIR -r requirements.txt -r requirements-test.txt
