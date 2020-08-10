@@ -165,6 +165,8 @@ def restore(output_file, text, word_vocabulary, reverse_punctuation_vocabulary, 
 class Punctuator:
 
     def model_exists(self, fn):
+        if isinstance(fn, bytes):
+            return fn
         if os.path.isfile(fn):
             return fn
         _fn = os.path.join(PUNCTUATOR_DATA_DIR, fn)
@@ -186,16 +188,20 @@ class Punctuator:
             p = T.matrix('p')
 
             logging.info("Loading model parameters...")
-            net, _ = models.load(model_file, 1, x, p)
-
+            if isinstance(model_file, bytes):
+                net, _ = models.loads(model_file, 1, x, p)
+            else:
+                net, _ = models.load(model_file, 1, x, p)
             logging.info("Building model...")
             self.predict = theano.function(inputs=[x, p], outputs=net.y)
 
         else:
 
             logging.info("Loading model parameters...")
-            net, _ = models.load(model_file, 1, x)
-
+            if isinstance(model_file, bytes):
+                net, _ = models.loads(model_file, 1, x)
+            else:
+                net, _ = models.load(model_file, 1, x)
             logging.info("Building model...")
             self.predict = theano.function(inputs=[x], outputs=net.y)
 
