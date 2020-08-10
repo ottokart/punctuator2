@@ -13,30 +13,30 @@ from .punc import Punctuator, download_model
 
 class Tests(unittest.TestCase):
 
-    def test_punctuate(self):
+    samples = [
+        (
+            'mary had a little lamb its fleece was white as snow and anywhere that mary went the lamb was sure to go',
+            'Mary had a little lamb, its fleece was white as snow and anywhere that mary went, the lamb was sure to go.'
+        ),
+        (
+            "they say it's only as cold as it feels in your mind i don't buy into that theory much what do you think",
+            "They say it's only as cold as it feels in your mind. I don't buy into that theory much. What do you think."
+        ),
+        (
+            "he's a do me a favor go home to your wife",
+            "He's a do me: a favor go home to your wife.",
+        ),
+        (
+            "they'll even negotiate your rate with the insurance company",
+            "They'll even negotiate your rate with the insurance company.",
+        ),
+        (
+            "for me i wanted to get into commentary some sort of way i didn't know how to do that so i left the firm and i started a business",
+            "For me, I wanted to get into commentary some sort of way. I didn't know how to do that. So I left the firm and I started a business."
+        ),
+    ]
 
-        samples = [
-            (
-                'mary had a little lamb its fleece was white as snow and anywhere that mary went the lamb was sure to go',
-                'Mary had a little lamb, its fleece was white as snow and anywhere that mary went, the lamb was sure to go.'
-            ),
-            (
-                "they say it's only as cold as it feels in your mind i don't buy into that theory much what do you think",
-                "They say it's only as cold as it feels in your mind. I don't buy into that theory much. What do you think."
-            ),
-            (
-                "he's a do me a favor go home to your wife",
-                "He's a do me: a favor go home to your wife.",
-            ),
-            (
-                "they'll even negotiate your rate with the insurance company",
-                "They'll even negotiate your rate with the insurance company.",
-            ),
-            (
-                "for me i wanted to get into commentary some sort of way i didn't know how to do that so i left the firm and i started a business",
-                "For me, I wanted to get into commentary some sort of way. I didn't know how to do that. So I left the firm and I started a business."
-            ),
-        ]
+    def test_punctuate(self):
 
         # Create temp directory for downloading data.
         d = tempfile.mkdtemp()
@@ -64,7 +64,7 @@ class Tests(unittest.TestCase):
             print('Loaded in %s seconds from path.' % td)
 
             # Add punctuation.
-            for input_text, expect_output_text in samples:
+            for input_text, expect_output_text in self.samples:
                 fout = StringIO()
                 actual_output_text = p.punctuate(input_text)
                 print('expect_output_text:', expect_output_text)
@@ -87,7 +87,7 @@ class Tests(unittest.TestCase):
             print('Loaded in %s seconds.' % td)
 
             # Confirm punctuations match previous.
-            for input_text, expect_output_text in samples:
+            for input_text, expect_output_text in self.samples:
                 fout = StringIO()
                 actual_output_text = p2.punctuate(input_text)
                 print('expect_output_text:', expect_output_text)
