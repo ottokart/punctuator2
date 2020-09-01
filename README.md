@@ -138,7 +138,7 @@ The software is described in:
 We used the [release v1.0](https://github.com/ottokart/punctuator2/releases/tag/v1.0) in the paper.
 
 # Alternatives
-
+* Punctuator reimplemented in Tensorflow: https://github.com/cadia-lvl/punctuation-prediction/tree/master/punctuator2tf2
 * A fork from this repository that uses additional prosodic features: https://github.com/alpoktem/punkProse
 * Convolutional neural network with slightly smaller accuracy but much higher speed (50x faster): https://github.com/vackosar/keras-punctuator (additional details here: https://github.com/ottokart/punctuator2/issues/14)
 * A general sequence labeling model: https://github.com/marekrei/sequence-labeler that can be used for punctuation restoration with small modifications (example here: https://github.com/ottokart/sequence-labeler). Punctuator2 can be probably used for other sequence labeling problems as well.
