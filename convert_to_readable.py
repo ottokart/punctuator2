@@ -31,3 +31,5 @@ if __name__ == "__main__":
                 first = True
             else:
                 first = False
+        out_f.write('.\n')
+
